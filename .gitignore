@@ -1,0 +1,15 @@
+# Foto dihasilkan saat aplikasi digunakan, bukan bagian dari kode.
+/uploads/*
+!/uploads/.gitkeep
+
+# Konfigurasi dan file lokal.
+.env
+.env.*
+*.local.php
+*.log
+*.tmp
+*.bak
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
