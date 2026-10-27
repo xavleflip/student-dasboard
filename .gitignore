@@ -1,6 +1,7 @@
 # Foto dihasilkan saat aplikasi digunakan, bukan bagian dari kode.
 /uploads/*
 !/uploads/.gitkeep
+!/uploads/foto-demo-*.png
 
 # Konfigurasi dan file lokal.
 .env
