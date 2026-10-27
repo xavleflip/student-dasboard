@@ -13,13 +13,13 @@ try {
     if ($nim === '' || mb_strlen($nim) > 10) throw new RuntimeException('NIM tidak valid.');
     $conn->begin_transaction();
     $inTransaction = true;
-    $stmt = $conn->prepare('SELECT photo FROM nilai WHERE nim = ? FOR UPDATE');
+    $stmt = $conn->prepare('SELECT photo FROM nilaimhsw WHERE nim = ? FOR UPDATE');
     $stmt->bind_param('s', $nim);
     $stmt->execute();
     $record = $stmt->get_result()->fetch_assoc();
     if (!$record) throw new RuntimeException('Data mahasiswa sudah tidak ditemukan.');
     $photo = $record['photo'];
-    $stmt = $conn->prepare('DELETE FROM nilai WHERE nim = ?');
+    $stmt = $conn->prepare('DELETE FROM nilaimhsw WHERE nim = ?');
     $stmt->bind_param('s', $nim);
     $stmt->execute();
     $conn->commit();

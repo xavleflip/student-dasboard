@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $conn->begin_transaction();
         $inTransaction = true;
         if ($isEdit) {
-            $existing = $conn->prepare('SELECT photo FROM nilai WHERE nim = ? FOR UPDATE');
+            $existing = $conn->prepare('SELECT photo FROM nilaimhsw WHERE nim = ? FOR UPDATE');
             $existing->bind_param('s', $originalNim);
             $existing->execute();
             $record = $existing->get_result()->fetch_assoc();
@@ -40,10 +40,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         [$letter, $predicate] = convertNilaiAkhir($score);
         $photoToSave = $savedPhoto ?? $oldPhoto;
         if ($isEdit) {
-            $stmt = $conn->prepare('UPDATE nilai SET nim = ?, nm_lengkap = ?, nilai_akhir = ?, nilai_huruf = ?, predikat = ?, photo = ?, modified_date = CURRENT_TIMESTAMP WHERE nim = ?');
+            $stmt = $conn->prepare('UPDATE nilaimhsw SET nim = ?, nm_lengkap = ?, nilai_akhir = ?, nilai_huruf = ?, predikat = ?, photo = ?, modified_date = CURRENT_TIMESTAMP WHERE nim = ?');
             $stmt->bind_param('ssdssss', $values['nim'], $values['nm_lengkap'], $score, $letter, $predicate, $photoToSave, $originalNim);
         } else {
-            $stmt = $conn->prepare('INSERT INTO nilai (nim, nm_lengkap, nilai_akhir, nilai_huruf, predikat, photo) VALUES (?, ?, ?, ?, ?, ?)');
+            $stmt = $conn->prepare('INSERT INTO nilaimhsw (nim, nm_lengkap, nilai_akhir, nilai_huruf, predikat, photo) VALUES (?, ?, ?, ?, ?, ?)');
             $stmt->bind_param('ssdsss', $values['nim'], $values['nm_lengkap'], $score, $letter, $predicate, $photoToSave);
         }
         $stmt->execute();

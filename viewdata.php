@@ -17,7 +17,7 @@ $page = max(1, (int) queryString('page', '1'));
 // Escape LIKE wildcards so search text is treated as a literal name.
 $pattern = '%' . strtr($search, ['!' => '!!', '%' => '!%', '_' => '!_']) . '%';
 $where = "WHERE nm_lengkap LIKE ? ESCAPE '!' AND (? = '' OR predikat = ?)";
-$count = $conn->prepare("SELECT COUNT(*) FROM nilai $where");
+$count = $conn->prepare("SELECT COUNT(*) FROM nilaimhsw $where");
 $count->bind_param('sss', $pattern, $filter, $filter);
 $count->execute();
 $total = (int) $count->get_result()->fetch_row()[0];
@@ -25,7 +25,7 @@ $pages = max(1, (int) ceil($total / $limit));
 $page = min($page, $pages);
 $offset = ($page - 1) * $limit;
 $order = strtoupper($sort);
-$stmt = $conn->prepare("SELECT * FROM nilai $where ORDER BY nilai_akhir $order, nim ASC LIMIT ? OFFSET ?");
+$stmt = $conn->prepare("SELECT * FROM nilaimhsw $where ORDER BY nilai_akhir $order, nim ASC LIMIT ? OFFSET ?");
 $stmt->bind_param('sssii', $pattern, $filter, $filter, $limit, $offset);
 $stmt->execute();
 $rows = $stmt->get_result();
@@ -35,7 +35,7 @@ $old = $_SESSION['old'] ?? [];
 $editNim = queryString('edit');
 $editing = null;
 if ($editNim !== '') {
-    $editStmt = $conn->prepare('SELECT * FROM nilai WHERE nim = ?');
+    $editStmt = $conn->prepare('SELECT * FROM nilaimhsw WHERE nim = ?');
     $editStmt->bind_param('s', $editNim);
     $editStmt->execute();
     $editing = $editStmt->get_result()->fetch_assoc();

@@ -14,7 +14,13 @@ session_start();
 try {
     $conn->query("CREATE DATABASE IF NOT EXISTS dbmahasiswa CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
     $conn->select_db('dbmahasiswa');
-    $conn->query("CREATE TABLE IF NOT EXISTS nilai (
+    // Ganti nama tabel versi lama tanpa menghapus isi dan fotonya.
+    $hasTable = $conn->query("SHOW TABLES LIKE 'nilaimhsw'")->num_rows > 0;
+    $hasOldTable = $conn->query("SHOW TABLES LIKE 'nilai'")->num_rows > 0;
+    if (!$hasTable && $hasOldTable) {
+        $conn->query('RENAME TABLE nilai TO nilaimhsw');
+    }
+    $conn->query("CREATE TABLE IF NOT EXISTS nilaimhsw (
         nim CHAR(10) PRIMARY KEY,
         nm_lengkap VARCHAR(100) NOT NULL,
         photo VARCHAR(255) NULL,
@@ -24,8 +30,8 @@ try {
         created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         modified_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
-    if ($conn->query("SHOW COLUMNS FROM nilai LIKE 'photo'")->num_rows === 0) {
-        $conn->query('ALTER TABLE nilai ADD COLUMN photo VARCHAR(255) NULL AFTER nm_lengkap');
+    if ($conn->query("SHOW COLUMNS FROM nilaimhsw LIKE 'photo'")->num_rows === 0) {
+        $conn->query('ALTER TABLE nilaimhsw ADD COLUMN photo VARCHAR(255) NULL AFTER nm_lengkap');
     }
 } catch (mysqli_sql_exception $error) {
     http_response_code(503);
@@ -109,7 +115,7 @@ function photoUrl($filename) {
 function removeUnusedPhoto($filename) {
     global $conn;
     if (!$filename || !preg_match('/^[a-f0-9]{32}\.(jpg|png|gif)$/', $filename)) return;
-    $stmt = $conn->prepare('SELECT COUNT(*) FROM nilai WHERE photo = ?');
+    $stmt = $conn->prepare('SELECT COUNT(*) FROM nilaimhsw WHERE photo = ?');
     $stmt->bind_param('s', $filename);
     $stmt->execute();
     if ((int) $stmt->get_result()->fetch_row()[0] === 0) {
