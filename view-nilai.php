@@ -10,7 +10,7 @@ require __DIR__ . '/viewdata.php';
     <title>Nilai Mahasiswa</title>
     <link rel="stylesheet" href="adminlte.min.css">
     <style>
-/* Tampilan halaman sederhana. CSS tabel dan tombol diimpor dari dist. */
+/* Tampilan halaman sederhana. CSS tabel dan tombol dari AdminLTE. */
 body { margin: 0; background: #15191f; color: #e2e8f0; font-family: Arial, sans-serif; }
 .halaman { width: 95%; max-width: 1250px; margin: 28px auto; }
 .judul-halaman { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 20px; }
@@ -67,7 +67,7 @@ body.modal-open { overflow: hidden; }
 <form method="get" class="row g-3 align-items-end">
 <div class="col-md-4"><label for="search" class="form-label">Cari nama lengkap</label><input type="search" id="search" name="search" class="form-control" placeholder="Ketik nama mahasiswa…" value="<?= e($search) ?>"></div>
 <div class="col-md-3"><label for="predicate" class="form-label">Predikat</label><select id="predicate" name="filter_predikat" class="form-select"><option value="">Semua predikat</option><?php foreach ($predicates as $item): ?><option <?= $filter === $item ? 'selected' : '' ?> value="<?= e($item) ?>"><?= e($item) ?></option><?php endforeach ?></select></div>
-<div class="col-md-2"><label for="limit" class="form-label">Data per halaman</label><select id="limit" name="limit" class="form-select"><?php foreach ([1, 5, 15, 25] as $size): ?><option value="<?= $size ?>" <?= $limit === $size ? 'selected' : '' ?>><?= $size ?></option><?php endforeach ?></select></div>
+<div class="col-md-2"><label for="limit" class="form-label">Data per halaman</label><select id="limit" name="limit" class="form-select"><?php foreach ([5, 10, 15] as $size): ?><option value="<?= $size ?>" <?= $limit === $size ? 'selected' : '' ?>><?= $size ?></option><?php endforeach ?></select></div>
 <input type="hidden" name="sort" value="<?= e($sort) ?>">
 <div class="col-md-3 d-flex gap-2"><button class="btn btn-primary" type="submit">Terapkan</button><a class="btn btn-outline-secondary" href="view-nilai.php">Reset</a></div>
 </form>
@@ -94,7 +94,9 @@ body.modal-open { overflow: hidden; }
     <div class="card-footer p-3 d-flex flex-wrap justify-content-between align-items-center gap-3">
 <p class="mb-0 text-body-secondary small">Menampilkan <?= $total ? $offset + 1 : 0 ?>–<?= min($offset + $limit, $total) ?> dari <?= $total ?> mahasiswa · Halaman <?= $page ?> dari <?= $pages ?></p>
 <nav aria-label="Navigasi halaman"><ul class="pagination pagination-sm mb-0">
-<?php if ($page > 1): ?><li class="page-item"><a class="page-link" href="<?= e(pageUrl(['page' => $page - 1])) ?>">Sebelumnya</a></li><?php endif ?>
+<?php foreach (['Pertama' => 1, 'Sebelumnya' => $page - 1] as $label => $target): ?>
+<li class="page-item <?= $page === 1 ? 'disabled' : '' ?>"><?php if ($page > 1): ?><a class="page-link" href="<?= e(pageUrl(['page' => $target])) ?>"><?= $label ?></a><?php else: ?><span class="page-link" aria-disabled="true"><?= $label ?></span><?php endif ?></li>
+<?php endforeach ?>
 <?php
 $visible = array_unique(array_merge([1], range(max(1, $page - 2), min($pages, $page + 2)), [$pages]));
 $previous = 0;
@@ -102,7 +104,9 @@ foreach ($visible as $p):
 if ($previous && $p > $previous + 1): ?><li class="page-item disabled"><span class="page-link">…</span></li><?php endif ?>
 <li class="page-item <?= $p === $page ? 'active' : '' ?>"><a class="page-link" <?= $p === $page ? 'aria-current="page"' : '' ?> href="<?= e(pageUrl(['page' => $p])) ?>"><?= $p ?></a></li>
 <?php $previous = $p; endforeach ?>
-<?php if ($page < $pages): ?><li class="page-item"><a class="page-link" href="<?= e(pageUrl(['page' => $page + 1])) ?>">Berikutnya</a></li><?php endif ?>
+<?php foreach (['Berikutnya' => $page + 1, 'Terakhir' => $pages] as $label => $target): ?>
+<li class="page-item <?= $page === $pages ? 'disabled' : '' ?>"><?php if ($page < $pages): ?><a class="page-link" href="<?= e(pageUrl(['page' => $target])) ?>"><?= $label ?></a><?php else: ?><span class="page-link" aria-disabled="true"><?= $label ?></span><?php endif ?></li>
+<?php endforeach ?>
 </ul></nav>
 <form method="get" class="d-flex gap-2 align-items-center">
 <input type="hidden" name="search" value="<?= e($search) ?>"><input type="hidden" name="filter_predikat" value="<?= e($filter) ?>"><input type="hidden" name="sort" value="<?= e($sort) ?>"><input type="hidden" name="limit" value="<?= $limit ?>">

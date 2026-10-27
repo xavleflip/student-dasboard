@@ -12,7 +12,7 @@ $filter = queryString('filter_predikat');
 if (!in_array($filter, $predicates, true)) $filter = '';
 $sort = strtolower(queryString('sort', 'desc')) === 'asc' ? 'asc' : 'desc';
 $limit = (int) queryString('limit', '5');
-if (!in_array($limit, [1, 5, 15, 25], true)) $limit = 5;
+if (!in_array($limit, [5, 10, 15], true)) $limit = 5;
 $page = max(1, (int) queryString('page', '1'));
 // Escape LIKE wildcards so search text is treated as a literal name.
 $pattern = '%' . strtr($search, ['!' => '!!', '%' => '!%', '_' => '!_']) . '%';
